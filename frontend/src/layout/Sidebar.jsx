@@ -1,10 +1,19 @@
 import { Link } from "react-router-dom";
-import { LayoutDashboard, BookOpen, Brain, LogOut } from "lucide-react";
+import {
+  LayoutDashboard,
+  BookOpen,
+  Brain,
+  ListChecks,
+  Shield,
+  LogOut,
+  FileText,
+  Code2,
+} from "lucide-react";
 import { useContext } from "react";
 import { AuthContext } from "../context/Authcontext.jsx";
 
 const Sidebar = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout, user } = useContext(AuthContext);
 
   return (
     <aside className="w-64 bg-surface hidden lg:flex flex-col p-6 border-r border-white/5">
@@ -39,6 +48,40 @@ const Sidebar = () => {
           <Brain size={18} />
           Practice Mode
         </Link>
+
+        <Link
+          to="/practice-overview"
+          className="flex items-center gap-3 hover:text-cyan transition"
+        >
+          <ListChecks size={18} />
+          DSA Practice
+        </Link>
+
+        <Link
+          to="/resume-match"
+          className="flex items-center gap-3 hover:text-cyan transition"
+        >
+          <FileText size={18} />
+          Resume Match
+        </Link>
+
+        <Link
+          to="/ai-coding"
+          className="flex items-center gap-3 hover:text-cyan transition"
+        >
+          <Code2 size={18} />
+          AI Coding Practice
+        </Link>
+
+        {user?.role === "admin" && (
+          <Link
+            to="/admin-practice"
+            className="flex items-center gap-3 hover:text-cyan transition"
+          >
+            <Shield size={18} />
+            Admin Practice
+          </Link>
+        )}
 
         <Link
           to="/adaptive"

@@ -2,6 +2,8 @@ import fetch from "node-fetch";
 import InterviewSession from "../models/InterviewSession.js";
 
 const MAX_QUESTIONS = 5;
+const getModel = () =>
+  process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct";
 
 /* =========================================
    🔹 Generate Question
@@ -22,22 +24,25 @@ Generate ONE interview question.
 - No explanation
 `;
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        messages: [
+          { role: "system", content: "You are a strict interviewer." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 60,
+      }),
     },
-    body: JSON.stringify({
-      model: "mistralai/mistral-7b-instruct",
-      messages: [
-        { role: "system", content: "You are a strict interviewer." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.7,
-      max_tokens: 60
-    })
-  });
+  );
 
   const data = await response.json();
   return data.choices?.[0]?.message?.content?.trim();
@@ -60,22 +65,25 @@ Score: X/10
 Feedback: short paragraph
 `;
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        messages: [
+          { role: "system", content: "You evaluate interview answers." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.3,
+        max_tokens: 200,
+      }),
     },
-    body: JSON.stringify({
-      model: "mistralai/mistral-7b-instruct",
-      messages: [
-        { role: "system", content: "You evaluate interview answers." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.3,
-      max_tokens: 200
-    })
-  });
+  );
 
   const data = await response.json();
   let evaluation = data.choices?.[0]?.message?.content?.trim() || "";
@@ -93,12 +101,14 @@ Feedback: short paragraph
    🔹 Generate Final Summary
 ========================================= */
 const generateFinalSummary = async (session) => {
-  const qaText = session.questions.map((q, index) => {
-    return `
+  const qaText = session.questions
+    .map((q, index) => {
+      return `
 Question ${index + 1}: ${q.question}
 Score: ${q.score}/10
 `;
-  }).join("\n");
+    })
+    .join("\n");
 
   const prompt = `
 You are a senior technical interviewer.
@@ -118,22 +128,28 @@ Include:
 - Final recommendation
 `;
 
-  const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        messages: [
+          {
+            role: "system",
+            content: "You generate professional interview summaries.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.4,
+        max_tokens: 300,
+      }),
     },
-    body: JSON.stringify({
-      model: "mistralai/mistral-7b-instruct",
-      messages: [
-        { role: "system", content: "You generate professional interview summaries." },
-        { role: "user", content: prompt }
-      ],
-      temperature: 0.4,
-      max_tokens: 300
-    })
-  });
+  );
 
   const data = await response.json();
   return data.choices?.[0]?.message?.content?.trim();
@@ -149,7 +165,7 @@ export const startAdaptiveInterview = async (req, res) => {
     const session = await InterviewSession.create({
       userId: req.user._id,
       topic,
-      difficulty: difficulty || "medium"
+      difficulty: difficulty || "medium",
     });
 
     const question = await generateQuestion(topic, session.difficulty);
@@ -159,9 +175,8 @@ export const startAdaptiveInterview = async (req, res) => {
 
     return res.json({
       sessionId: session._id,
-      question
+      question,
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Failed to start interview" });
@@ -186,7 +201,7 @@ export const submitAdaptiveAnswer = async (req, res) => {
     const { score, evaluation } = await evaluateAnswer(
       session.topic,
       question,
-      answer
+      answer,
     );
 
     session.totalScore += score;
@@ -197,7 +212,7 @@ export const submitAdaptiveAnswer = async (req, res) => {
       question,
       answer,
       score,
-      feedback: evaluation
+      feedback: evaluation,
     });
 
     // 🔹 Adjust difficulty
@@ -222,7 +237,7 @@ export const submitAdaptiveAnswer = async (req, res) => {
         completed: true,
         finalScore,
         summary,
-        breakdown: session.questions
+        breakdown: session.questions,
       });
     }
 
@@ -230,7 +245,7 @@ export const submitAdaptiveAnswer = async (req, res) => {
     const nextQuestion = await generateQuestion(
       session.topic,
       session.difficulty,
-      `Previous score was ${score}/10.`
+      `Previous score was ${score}/10.`,
     );
 
     session.currentQuestion = nextQuestion;
@@ -240,9 +255,8 @@ export const submitAdaptiveAnswer = async (req, res) => {
       completed: false,
       score,
       evaluation,
-      nextQuestion
+      nextQuestion,
     });
-
   } catch (error) {
     console.error(error);
     return res.status(500).json({ message: "Failed to process answer" });

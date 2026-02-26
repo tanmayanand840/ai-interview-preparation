@@ -1,5 +1,81 @@
 import fetch from "node-fetch";
+import { PDFParse } from "pdf-parse";
 import Attempt from "../models/Attempt.js";
+
+const getModel = () =>
+  process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct";
+
+async function analyzeResumeAndJD(resumeText, jobDescription) {
+  const prompt = `You are a senior technical interviewer and career coach.
+
+Candidate resume:
+"""
+${resumeText}
+"""
+
+Target job description:
+"""
+${jobDescription}
+"""
+
+1. Briefly summarize the candidate's current profile in 2-3 short sentences.
+2. Compare the resume against the job description and identify the main skill gaps.
+3. Recommend 5-10 concrete technical topics or problem areas (especially DSA / system design / core CS) the candidate should practice next.
+4. Estimate an ATS-style compatibility score between 0 and 100, where 0 means very poor match and 100 means an almost perfect match.
+
+Return a JSON object with this exact structure (no extra text, no markdown):
+{
+  "summary": "short overview",
+  "skill_gaps": ["gap 1", "gap 2", "gap 3"],
+  "recommended_topics": ["topic 1", "topic 2", "topic 3"],
+  "suggestions": ["short tip 1", "short tip 2", "short tip 3"],
+  "ats_score": 0
+}`;
+
+  const response = await fetch(
+    "https://openrouter.ai/api/v1/chat/completions",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+        "HTTP-Referer": "http://localhost:5000",
+        "X-Title": "ai-interview-platform",
+      },
+      body: JSON.stringify({
+        model: getModel(),
+        messages: [
+          {
+            role: "system",
+            content:
+              "You analyze resumes vs job descriptions and output clean JSON only.",
+          },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.4,
+        max_tokens: 350,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText);
+  }
+
+  const data = await response.json();
+  let content = data.choices?.[0]?.message?.content?.trim() || "";
+
+  let parsed;
+  try {
+    parsed = JSON.parse(content);
+  } catch (err) {
+    console.error("Resume analysis JSON parse error:", err);
+    parsed = { raw: content };
+  }
+
+  return parsed;
+}
 
 // 🔹 Generate Question (Short + Clean)
 export const generateQuestion = async (req, res) => {
@@ -24,24 +100,31 @@ Rules:
 - Return only the question text
 `;
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "http://localhost:5000",
-        "X-Title": "ai-interview-platform"
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "HTTP-Referer": "http://localhost:5000",
+          "X-Title": "ai-interview-platform",
+        },
+        body: JSON.stringify({
+          model: getModel(),
+          messages: [
+            {
+              role: "system",
+              content:
+                "You generate short, clear technical interview questions.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.7,
+          max_tokens: 60,
+        }),
       },
-      body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
-        messages: [
-          { role: "system", content: "You generate short, clear technical interview questions." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 60
-      })
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -60,13 +143,13 @@ Rules:
       .trim();
 
     res.json({ question });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to generate question", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to generate question", error: error.message });
   }
 };
-
 
 // 🔹 Evaluate Answer (Readable ~50 Words)
 export const evaluateAnswer = async (req, res) => {
@@ -74,7 +157,9 @@ export const evaluateAnswer = async (req, res) => {
     const { topic, question, answer } = req.body;
 
     if (!topic || !question || !answer) {
-      return res.status(400).json({ message: "Topic, question, and answer are required" });
+      return res
+        .status(400)
+        .json({ message: "Topic, question, and answer are required" });
     }
 
     const prompt = `
@@ -108,24 +193,30 @@ Rules:
 - No extra commentary
 `;
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "HTTP-Referer": "http://localhost:5000",
-        "X-Title": "ai-interview-platform"
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "HTTP-Referer": "http://localhost:5000",
+          "X-Title": "ai-interview-platform",
+        },
+        body: JSON.stringify({
+          model: getModel(),
+          messages: [
+            {
+              role: "system",
+              content: "You give concise, readable interview feedback.",
+            },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.3,
+          max_tokens: 120,
+        }),
       },
-      body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
-        messages: [
-          { role: "system", content: "You give concise, readable interview feedback." },
-          { role: "user", content: prompt }
-        ],
-        temperature: 0.3,
-        max_tokens: 120
-      })
-    });
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -153,14 +244,15 @@ Rules:
       question,
       answer,
       score,
-      feedback: evaluation
+      feedback: evaluation,
     });
 
     res.json({ evaluation, score });
-
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Failed to evaluate answer", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Failed to evaluate answer", error: error.message });
   }
 };
 // 🔹 Get Interview History
@@ -176,4 +268,71 @@ export const getHistory = async (req, res) => {
     res.status(500).json({ message: "Failed to fetch history" });
   }
 };
+// 🔹 Analyze Resume + Job Description (text body)
+export const analyzeResumeJD = async (req, res) => {
+  try {
+    const { resumeText, jobDescription } = req.body;
 
+    if (!resumeText || !jobDescription) {
+      return res
+        .status(400)
+        .json({ message: "Resume and job description are required" });
+    }
+
+    const parsed = await analyzeResumeAndJD(resumeText, jobDescription);
+    res.json(parsed);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to analyze resume and job description",
+      error: error.message,
+    });
+  }
+};
+
+// 🔹 Analyze Resume + Job Description (PDF upload)
+export const analyzeResumeJDFromUpload = async (req, res) => {
+  try {
+    const resumeFile = req.files?.resumePdf?.[0];
+    const jdFile = req.files?.jdPdf?.[0];
+
+    if (!resumeFile && !jdFile) {
+      return res
+        .status(400)
+        .json({ message: "Please upload at least one PDF file" });
+    }
+
+    let resumeText = req.body.resumeText || "";
+    let jobDescription = req.body.jobDescription || "";
+
+    if (resumeFile) {
+      const parser = new PDFParse({ data: resumeFile.buffer });
+      const parsed = await parser.getText();
+      await parser.destroy();
+      resumeText = `${resumeText}\n\n${parsed.text}`.trim();
+    }
+
+    if (jdFile) {
+      const parser = new PDFParse({ data: jdFile.buffer });
+      const parsed = await parser.getText();
+      await parser.destroy();
+      jobDescription = `${jobDescription}\n\n${parsed.text}`.trim();
+    }
+
+    if (!resumeText || !jobDescription) {
+      return res.status(400).json({
+        message:
+          "Could not extract enough text from the uploaded files. Please check the PDFs or add some text.",
+      });
+    }
+
+    const parsedResult = await analyzeResumeAndJD(resumeText, jobDescription);
+    res.json(parsedResult);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Failed to analyze uploaded resume and job description",
+      error: error.message,
+    });
+  }
+};

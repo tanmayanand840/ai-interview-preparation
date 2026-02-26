@@ -6,6 +6,8 @@ import learnRoutes from "./routes/learnRoutes.js";
 import interviewRoutes from "./routes/interviewRoutes.js";
 import adaptiveRoutes from "./routes/adaptiveRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js";
+import practiceRoutes from "./routes/practiceRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 config();
 connectDB();
@@ -14,13 +16,12 @@ const app = express();
 
 app.use(cors());
 app.use(json());
-
-import authRoutes from "./routes/authRoutes.js";
 app.use("/api/auth", authRoutes);
 app.use("/api/learn", learnRoutes);
 app.use("/api/interview", interviewRoutes);
 app.use("/api/adaptive", adaptiveRoutes);
 app.use("/api/analytics", analyticsRoutes);
+app.use("/api/practice", practiceRoutes);
 app.listen(process.env.PORT, () => {
   console.log(`Server running on port ${process.env.PORT}`);
 });

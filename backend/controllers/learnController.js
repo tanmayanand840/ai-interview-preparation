@@ -20,7 +20,8 @@ export const teachTopic = async (req, res) => {
         "X-Title": "ai-interview-platform" // Optional: set your app name
       },
       body: JSON.stringify({
-        model: "mistralai/mistral-7b-instruct",
+        // Use a serverless model available on OpenRouter
+        model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: "You are a helpful university professor." },
           { role: "user", content: prompt }
@@ -34,11 +35,11 @@ export const teachTopic = async (req, res) => {
     }
 
     const data = await response.json();
-    let lesson = "No response from Gemini.";
+    let lesson = "No response from AI model.";
     if (data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content) {
       lesson = data.choices[0].message.content;
     } else if (data.error && data.error.message) {
-      lesson = `Gemini error: ${data.error.message}`;
+      lesson = `OpenRouter error: ${data.error.message}`;
     }
     // Clean up markdown for better readability
     lesson = lesson
@@ -57,6 +58,6 @@ export const teachTopic = async (req, res) => {
     res.json({ lesson });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Gemini AI failed", error: error.message });
+    res.status(500).json({ message: "OpenRouter AI failed", error: error.message });
   }
 };

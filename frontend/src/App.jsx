@@ -5,6 +5,11 @@ import Dashboard from "./pages/Dashboard";
 import Learn from "./pages/Learn";
 import Practice from "./pages/Practice";
 import Adaptive from "./pages/Adaptive";
+import PracticeOverview from "./pages/PracticeOverview";
+import TopicProblems from "./pages/TopicProblems";
+import AdminPractice from "./pages/AdminPractice";
+import ResumeMatch from "./pages/ResumeMatch";
+import AICodingPractice from "./pages/AICodingPractice";
 import Layout from "./layout/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -49,11 +54,66 @@ function App() {
       />
 
       <Route
+        path="/practice-overview"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <PracticeOverview />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/practice/:topic"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <TopicProblems />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/admin-practice"
+        element={
+          <ProtectedRoute requireAdmin>
+            <Layout>
+              <AdminPractice />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
         path="/adaptive"
         element={
           <ProtectedRoute>
             <Layout>
               <Adaptive />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/resume-match"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <ResumeMatch />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/ai-coding"
+        element={
+          <ProtectedRoute>
+            <Layout>
+              <AICodingPractice />
             </Layout>
           </ProtectedRoute>
         }
