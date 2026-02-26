@@ -1,0 +1,8 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply text-textPrimary;
+  background: radial-gradient(circle at 20% 30%, #0f172a 0%, #020617 60%);
+}
