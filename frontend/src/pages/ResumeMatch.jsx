@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import PageShell from "../components/PageShell";
 
 const ResumeMatch = () => {
   const [resumeText, setResumeText] = useState("");
@@ -52,13 +53,13 @@ const ResumeMatch = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-        Resume & Job Match
-      </h1>
-
-      <div className="grid md:grid-cols-2 gap-6 mb-8">
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 space-y-4">
+    <PageShell
+      title="Resume & Job Match"
+      subtitle="Compare your resume with the job description and get ATS-aware improvement suggestions."
+      tag="Career"
+    >
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="saas-card p-6 sm:p-7 space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">Your Resume</h2>
@@ -91,12 +92,12 @@ const ResumeMatch = () => {
             value={resumeText}
             onChange={(e) => setResumeText(e.target.value)}
             rows={14}
-            className="w-full p-4 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo min-h-[12rem] resize-y"
+            className="saas-textarea min-h-[12rem] resize-y"
             placeholder="Paste your resume text here (you can export from PDF and paste)."
           />
         </div>
 
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 space-y-4">
+        <div className="saas-card p-6 sm:p-7 space-y-4">
           <div className="flex items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-semibold">Job Description</h2>
@@ -128,7 +129,7 @@ const ResumeMatch = () => {
             value={jobDescription}
             onChange={(e) => setJobDescription(e.target.value)}
             rows={14}
-            className="w-full p-4 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo min-h-[12rem] resize-y"
+            className="saas-textarea min-h-[12rem] resize-y"
             placeholder="Paste the JD from the company careers page or job portal."
           />
         </div>
@@ -137,13 +138,13 @@ const ResumeMatch = () => {
       <button
         onClick={handleAnalyze}
         disabled={loading}
-        className="mt-2 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+        className="saas-btn-primary disabled:opacity-70"
       >
         {loading ? "Analyzing..." : "Analyze Match"}
       </button>
 
       {result && (
-        <div className="mt-8 bg-card p-6 rounded-2xl shadow-lg border border-white/5 space-y-4">
+        <div className="saas-card p-6 sm:p-7 space-y-4">
           {typeof result.ats_score === "number" &&
             !Number.isNaN(result.ats_score) && (
               <div className="flex items-baseline gap-3">
@@ -182,7 +183,7 @@ const ResumeMatch = () => {
                   {result.recommended_topics.map((topic, idx) => (
                     <span
                       key={idx}
-                      className="px-3 py-1 rounded-full text-sm bg-background border border-gray-700"
+                      className="px-3 py-1 rounded-full text-sm bg-background border border-white/10"
                     >
                       {topic}
                     </span>
@@ -213,7 +214,7 @@ const ResumeMatch = () => {
           )}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 };
 

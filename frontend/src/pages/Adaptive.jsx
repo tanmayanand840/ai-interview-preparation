@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { toast } from "react-hot-toast";
+import PageShell from "../components/PageShell";
 
 const getScoreColor = (score) => {
   if (score >= 8) return "text-green-400";
@@ -70,25 +71,25 @@ const Adaptive = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-        Adaptive Interview Mode
-      </h1>
-
+    <PageShell
+      title="Adaptive Interview Mode"
+      subtitle="Run dynamic interview sessions where each next question adapts to your performance."
+      tag="Adaptive Session"
+    >
       {!sessionId && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
+        <div className="saas-card p-6 sm:p-7">
           <div className="grid md:grid-cols-3 gap-4">
             <input
               placeholder="Enter topic"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              className="col-span-2 p-3 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo"
+              className="col-span-2 saas-input"
             />
 
             <select
               value={difficulty}
               onChange={(e) => setDifficulty(e.target.value)}
-              className="p-3 rounded-xl bg-background border border-gray-700"
+              className="saas-select"
             >
               <option value="easy">Easy</option>
               <option value="medium">Medium</option>
@@ -96,37 +97,31 @@ const Adaptive = () => {
             </select>
           </div>
 
-          <button
-            onClick={startSession}
-            className="mt-6 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow"
-          >
+          <button onClick={startSession} className="mt-6 saas-btn-primary">
             Start Interview
           </button>
         </div>
       )}
 
       {question && !finalReport && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Question</h2>
+        <div className="saas-card p-6 sm:p-7">
+          <h2 className="saas-section-title">Question</h2>
           <p className="mb-6">{question}</p>
 
           <textarea
             rows={6}
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
-            className="w-full p-4 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo"
+            className="saas-textarea"
             placeholder="Type your answer..."
           />
 
-          <button
-            onClick={submitAnswer}
-            className="mt-6 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-purple shadow-glow"
-          >
+          <button onClick={submitAnswer} className="mt-6 saas-btn-primary">
             Submit Answer
           </button>
 
           {evaluation && (
-            <div className="mt-6 p-4 bg-surface rounded-xl">
+            <div className="mt-6 p-4 bg-surface/80 rounded-xl border border-white/10">
               <p
                 className={`text-lg font-bold ${getScoreColor(evaluation.score)}`}
               >
@@ -139,7 +134,7 @@ const Adaptive = () => {
       )}
 
       {finalReport && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5">
+        <div className="saas-card p-6 sm:p-7">
           <h2 className="text-2xl font-bold mb-4 text-green-400">
             Final Score: {finalReport.finalScore}
           </h2>
@@ -150,7 +145,10 @@ const Adaptive = () => {
 
           <div className="space-y-4">
             {finalReport.breakdown.map((item, index) => (
-              <div key={index} className="bg-surface p-4 rounded-xl">
+              <div
+                key={index}
+                className="bg-surface/80 border border-white/10 p-4 rounded-xl"
+              >
                 <p className="font-semibold">{item.question}</p>
                 <p className="text-sm mt-2 text-textMuted">
                   Your Answer: {item.answer}
@@ -164,7 +162,7 @@ const Adaptive = () => {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 };
 

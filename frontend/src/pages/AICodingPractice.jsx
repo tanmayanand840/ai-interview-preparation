@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import api from "../api/axios";
+import PageShell from "../components/PageShell";
 
 const AICodingPractice = () => {
   const [topic, setTopic] = useState("");
@@ -74,25 +75,25 @@ const AICodingPractice = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-        AI Coding Practice
-      </h1>
-
+    <PageShell
+      title="AI Coding Practice"
+      subtitle="Generate coding tasks, solve in your language of choice, and receive optimization feedback."
+      tag="Coding"
+    >
       {/* Controls */}
-      <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8 space-y-4">
+      <div className="saas-card p-6 sm:p-7 space-y-4">
         <div className="grid md:grid-cols-3 gap-4">
           <input
             placeholder="DSA topic (e.g., Arrays, DP, Graphs)"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className="col-span-2 p-3 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo transition"
+            className="col-span-2 saas-input"
           />
 
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="p-3 rounded-xl bg-background border border-gray-700"
+            className="saas-select"
           >
             <option value="Easy">Easy</option>
             <option value="Medium">Medium</option>
@@ -106,7 +107,7 @@ const AICodingPractice = () => {
             <select
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="p-2 rounded-xl bg-background border border-gray-700 text-sm"
+              className="saas-select py-2 text-sm"
             >
               <option value="cpp">C++</option>
               <option value="python">Python</option>
@@ -118,7 +119,7 @@ const AICodingPractice = () => {
           <button
             onClick={handleGenerate}
             disabled={generationLoading}
-            className="px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+            className="saas-btn-primary disabled:opacity-70"
           >
             {generationLoading ? "Generating..." : "Generate Coding Problem"}
           </button>
@@ -127,7 +128,7 @@ const AICodingPractice = () => {
 
       {/* Problem Section */}
       {problem && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8 space-y-4">
+        <div className="saas-card p-6 sm:p-7 space-y-4">
           <div className="flex items-baseline justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold mb-1">{problem.title}</h2>
@@ -161,7 +162,7 @@ const AICodingPractice = () => {
               {problem.examples.map((ex, idx) => (
                 <div
                   key={idx}
-                  className="text-xs bg-background border border-gray-800 rounded-lg p-3 space-y-1"
+                  className="text-xs bg-background/80 border border-white/10 rounded-lg p-3 space-y-1"
                 >
                   {ex.input && (
                     <p>
@@ -195,20 +196,20 @@ const AICodingPractice = () => {
 
       {/* Code Editor */}
       {problem && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
+        <div className="saas-card p-6 sm:p-7">
           <h2 className="text-xl font-semibold mb-3">Your Solution</h2>
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
             rows={14}
-            className="w-full p-4 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo min-h-[14rem] font-mono text-sm resize-y"
+            className="saas-textarea min-h-[14rem] font-mono text-sm resize-y"
             placeholder={`Write your ${language.toUpperCase()} solution here...`}
           />
 
           <button
             onClick={handleEvaluate}
             disabled={evaluationLoading}
-            className="mt-4 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-purple shadow-glow hover:opacity-90 transition"
+            className="mt-4 saas-btn-primary disabled:opacity-70"
           >
             {evaluationLoading ? "Evaluating..." : "Submit & Get Feedback"}
           </button>
@@ -217,7 +218,7 @@ const AICodingPractice = () => {
 
       {/* Evaluation */}
       {evaluation && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 space-y-4">
+        <div className="saas-card p-6 sm:p-7 space-y-4">
           <div className="flex items-baseline justify-between gap-4">
             <div>
               <h2 className="text-xl font-semibold mb-1">Evaluation</h2>
@@ -307,7 +308,7 @@ const AICodingPractice = () => {
           )}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 };
 

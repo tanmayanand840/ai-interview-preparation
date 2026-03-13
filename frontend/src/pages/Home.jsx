@@ -11,6 +11,8 @@ import {
   FileText,
   Code2,
   Shield,
+  ArrowRight,
+  Rocket,
 } from "lucide-react";
 import vivamindLogo from "../assets/ChatGPT Image Feb 25, 2026, 12_08_44 PM.png";
 
@@ -102,11 +104,11 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
+    <div className="min-h-screen relative">
       <div className="pointer-events-none absolute -top-20 -left-10 h-72 w-72 rounded-full bg-indigo/20 blur-3xl" />
       <div className="pointer-events-none absolute top-40 -right-16 h-80 w-80 rounded-full bg-cyan/20 blur-3xl" />
 
-      <header className="sticky top-0 z-30 bg-background/45 backdrop-blur-xl border-b border-white/10">
+      <header className="fixed top-0 left-0 right-0 z-40 bg-background/45 backdrop-blur-xl border-b border-white/10">
         <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-16 sm:h-[74px] flex items-center justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
             <img
@@ -157,7 +159,7 @@ const Home = () => {
         </nav>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 pt-16 sm:pt-[74px]">
         <section className="pt-14 sm:pt-20 pb-10 text-center">
           <div className="mx-auto max-w-4xl">
             <p className="uppercase tracking-[0.18em] text-xs sm:text-sm text-cyan/90 mb-4">
@@ -199,26 +201,37 @@ const Home = () => {
         </section>
 
         <section className="pb-14 sm:pb-16">
-          <div className="mx-auto max-w-md bg-card/75 backdrop-blur-xl p-6 sm:p-7 rounded-2xl border border-white/10 shadow-2xl">
-            <h3 className="text-xl font-semibold text-center">
+          <div className="mx-auto max-w-xl bg-gradient-to-br from-card/85 via-card/75 to-surface/80 backdrop-blur-xl p-6 sm:p-8 rounded-2xl border border-white/10 shadow-[0_18px_36px_rgba(2,6,23,0.38)]">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-r from-indigo/40 to-cyan/40 border border-white/10">
+                <Rocket className="h-4 w-4 text-cyan" />
+              </span>
+              <p className="text-xs uppercase tracking-[0.16em] text-cyan/90">
+                Quick Start
+              </p>
+            </div>
+
+            <h3 className="text-2xl sm:text-3xl font-semibold text-center">
               Start Your Session
             </h3>
-            <p className="text-center text-textMuted text-sm mt-2 mb-6">
+            <p className="text-center text-textMuted text-sm sm:text-base mt-3 mb-7">
               Login or create your account to begin practicing right now.
             </p>
 
-            <div className="grid gap-3">
+            <div className="grid sm:grid-cols-2 gap-3">
               <Link
                 to="/login"
-                className="w-full text-center p-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+                className="w-full inline-flex items-center justify-center gap-2 p-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
               >
                 Login
+                <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 to="/register"
-                className="w-full text-center p-3 rounded-xl font-semibold border border-white/15 hover:border-cyan/70 hover:text-cyan transition"
+                className="w-full inline-flex items-center justify-center gap-2 p-3 rounded-xl font-semibold border border-white/15 bg-white/5 hover:border-cyan/70 hover:text-cyan transition"
               >
                 Sign Up
+                <ArrowRight className="h-4 w-4" />
               </Link>
             </div>
           </div>
@@ -333,15 +346,23 @@ const Home = () => {
         </section>
 
         <section className="pb-16 sm:pb-20">
-          <div className="mx-auto max-w-3xl text-center bg-card/70 border border-white/10 rounded-2xl p-7 sm:p-9 backdrop-blur-xl">
-            <p className="text-2xl sm:text-3xl font-semibold mb-5">
+          <div className="mx-auto max-w-4xl text-center bg-gradient-to-r from-card/80 via-surface/75 to-card/80 border border-white/10 rounded-2xl p-7 sm:p-10 backdrop-blur-xl shadow-[0_18px_36px_rgba(2,6,23,0.4)]">
+            <p className="text-xs uppercase tracking-[0.16em] text-cyan/90 mb-3">
+              Final Call
+            </p>
+            <p className="text-2xl sm:text-4xl font-semibold mb-3">
               Ready to improve your coding interviews?
+            </p>
+            <p className="text-textMuted max-w-2xl mx-auto mb-7 text-sm sm:text-base">
+              Launch guided practice sessions, solve interview-grade problems,
+              and get AI feedback instantly.
             </p>
             <Link
               to="/login"
-              className="inline-flex px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+              className="inline-flex items-center gap-2 px-7 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
             >
               Start Practicing
+              <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
         </section>

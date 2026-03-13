@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { toast } from "react-hot-toast";
+import PageShell from "../components/PageShell";
 
 const Learn = () => {
   const [topic, setTopic] = useState("");
@@ -94,26 +95,26 @@ const Learn = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-        Learn Mode
-      </h1>
-
+    <PageShell
+      title="Learn Mode"
+      subtitle="Generate structured AI lessons for any topic and level with clear breakdowns."
+      tag="Learning"
+    >
       {/* Input Section */}
-      <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
+      <div className="saas-card p-6 sm:p-7">
         <div className="grid md:grid-cols-3 gap-4">
           <input
             type="text"
             placeholder="Enter topic (e.g., TCP, DSA, OS)"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className="col-span-2 p-3 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo transition"
+            className="col-span-2 saas-input"
           />
 
           <select
             value={level}
             onChange={(e) => setLevel(e.target.value)}
-            className="p-3 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo"
+            className="saas-select"
           >
             <option value="beginner">Beginner</option>
             <option value="intermediate">Intermediate</option>
@@ -124,7 +125,7 @@ const Learn = () => {
         <button
           onClick={handleGenerate}
           disabled={loading}
-          className="mt-6 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+          className="mt-6 saas-btn-primary disabled:opacity-70"
         >
           {loading ? "Generating Lesson..." : "Generate Lesson"}
         </button>
@@ -132,19 +133,19 @@ const Learn = () => {
 
       {/* Lesson Output */}
       {loading && (
-        <div className="bg-card p-6 rounded-2xl animate-pulse border border-white/5">
-          <div className="h-4 bg-surface rounded w-1/3 mb-4"></div>
-          <div className="h-4 bg-surface rounded w-full mb-2"></div>
-          <div className="h-4 bg-surface rounded w-5/6"></div>
+        <div className="saas-card p-6 animate-pulse">
+          <div className="h-4 bg-surface/90 rounded w-1/3 mb-4"></div>
+          <div className="h-4 bg-surface/90 rounded w-full mb-2"></div>
+          <div className="h-4 bg-surface/90 rounded w-5/6"></div>
         </div>
       )}
 
       {lesson && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 leading-relaxed">
+        <div className="saas-card p-6 sm:p-7 leading-relaxed">
           {renderLesson()}
         </div>
       )}
-    </div>
+    </PageShell>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import api from "../api/axios";
 import { toast } from "react-hot-toast";
+import PageShell from "../components/PageShell";
 
 const getScoreColor = (score) => {
   if (score >= 8) return "text-green-400";
@@ -63,25 +64,25 @@ const Practice = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-8 bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-        Practice Mode
-      </h1>
-
+    <PageShell
+      title="Practice Mode"
+      subtitle="Generate role-relevant questions, submit your solution, and get instant AI evaluation."
+      tag="Interview Prep"
+    >
       {/* Input Section */}
-      <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
+      <div className="saas-card p-6 sm:p-7">
         <div className="grid md:grid-cols-3 gap-4">
           <input
             placeholder="Enter topic (e.g., TCP, DSA)"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            className="col-span-2 p-3 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo transition"
+            className="col-span-2 saas-input"
           />
 
           <select
             value={difficulty}
             onChange={(e) => setDifficulty(e.target.value)}
-            className="p-3 rounded-xl bg-background border border-gray-700"
+            className="saas-select"
           >
             <option value="easy">Easy</option>
             <option value="medium">Medium</option>
@@ -92,7 +93,7 @@ const Practice = () => {
         <button
           onClick={generateQuestion}
           disabled={loading}
-          className="mt-6 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-cyan shadow-glow hover:opacity-90 transition"
+          className="mt-6 saas-btn-primary disabled:opacity-70"
         >
           {loading ? "Generating..." : "Generate Question"}
         </button>
@@ -100,8 +101,8 @@ const Practice = () => {
 
       {/* Question Section */}
       {question && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Question</h2>
+        <div className="saas-card p-6 sm:p-7">
+          <h2 className="saas-section-title">Question</h2>
           <p className="mb-6">{question}</p>
 
           <textarea
@@ -109,13 +110,13 @@ const Practice = () => {
             value={answer}
             onChange={(e) => setAnswer(e.target.value)}
             rows={10}
-            className="w-full p-4 rounded-xl bg-background border border-gray-700 focus:ring-2 focus:ring-indigo min-h-[12rem] resize-y"
+            className="saas-textarea min-h-[12rem] resize-y"
           />
 
           <button
             onClick={submitAnswer}
             disabled={loading}
-            className="mt-6 px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-indigo to-purple shadow-glow hover:opacity-90 transition"
+            className="mt-6 saas-btn-primary disabled:opacity-70"
           >
             {loading ? "Evaluating..." : "Submit Answer"}
           </button>
@@ -124,8 +125,8 @@ const Practice = () => {
 
       {/* Evaluation Section */}
       {evaluation && (
-        <div className="bg-card p-6 rounded-2xl shadow-lg border border-white/5">
-          <h2 className="text-xl font-semibold mb-4">Evaluation</h2>
+        <div className="saas-card p-6 sm:p-7">
+          <h2 className="saas-section-title">Evaluation</h2>
 
           <p
             className={`text-2xl font-bold mb-4 ${getScoreColor(evaluation.score)}`}
@@ -138,7 +139,7 @@ const Practice = () => {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 };
 
