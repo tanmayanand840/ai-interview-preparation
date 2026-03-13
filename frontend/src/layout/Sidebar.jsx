@@ -10,6 +10,7 @@ import {
   Code2,
 } from "lucide-react";
 import { useContext } from "react";
+import vivamindLogo from "../assets/ChatGPT Image Feb 25, 2026, 12_08_44 PM.png";
 import { AuthContext } from "../context/Authcontext.jsx";
 
 const Sidebar = () => {
@@ -18,10 +19,16 @@ const Sidebar = () => {
   return (
     <aside className="w-64 bg-surface hidden lg:flex flex-col p-6 border-r border-white/5">
       <div className="flex items-center gap-3 mb-10">
-        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo to-cyan shadow-glow"></div>
-        <h1 className="text-xl font-bold bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
-          VivaMind
-        </h1>
+        <div className="relative w-32 h-10 flex items-center">
+          <img
+            src={vivamindLogo}
+            alt="VivaMind logo"
+            className="absolute inset-0 w-full h-full object-contain opacity-25 pointer-events-none select-none"
+          />
+          <h1 className="relative text-xl font-bold bg-gradient-to-r from-indigo to-cyan bg-clip-text text-transparent">
+            VivaMind
+          </h1>
+        </div>
       </div>
 
       <nav className="space-y-6 text-textMuted flex-1">

@@ -1,8 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
   @apply text-textPrimary;
+  font-family: "Manrope", sans-serif;
   background: radial-gradient(circle at 20% 30%, #0f172a 0%, #020617 60%);
+}
+
+@keyframes heroFloat {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes letterRiseIn {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.hero-title-motion {
+  display: inline-block;
+  background-size: 200% 200%;
+  animation: heroFloat 4.5s ease-in-out infinite, gradientShift 7s ease-in-out infinite;
+  will-change: transform, background-position;
+}
+
+.hero-title-letter {
+  display: inline-block;
+  opacity: 0;
+  animation: letterRiseIn 520ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-title-motion {
+    animation: none;
+  }
+
+  .hero-title-letter {
+    opacity: 1;
+    animation: none;
+  }
 }
