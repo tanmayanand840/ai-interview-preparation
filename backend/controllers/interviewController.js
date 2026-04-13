@@ -1,9 +1,47 @@
-import fetch from "node-fetch";
 import { PDFParse } from "pdf-parse";
 import Attempt from "../models/Attempt.js";
+import { uploadBufferToCloudinary } from "../config/cloudinary.js";
 
 const getModel = () =>
   process.env.OPENROUTER_MODEL || "mistralai/mistral-7b-instruct";
+
+const extractPdfTextFromBuffer = async (buffer) => {
+  const parser = new PDFParse({ data: buffer });
+
+  try {
+    const parsed = await parser.getText();
+    return parsed.text || "";
+  } finally {
+    if (typeof parser.destroy === "function") {
+      await parser.destroy();
+    }
+  }
+};
+
+const uploadPdfDocument = async (file, documentType) => {
+  const baseName = file.originalname
+    ? file.originalname.replace(/\.[^/.]+$/, "")
+    : documentType;
+  const publicId = `${documentType}-${Date.now()}-${baseName.replace(
+    /[^a-zA-Z0-9_-]/g,
+    "_",
+  )}`;
+
+  return uploadBufferToCloudinary(file.buffer, {
+    folder: `ai-interview-platform/${documentType}`,
+    publicId,
+  });
+};
+
+const parseAndUploadPdf = async (file, documentType) => {
+  const parsedText = await extractPdfTextFromBuffer(file.buffer);
+  const uploadedDocument = await uploadPdfDocument(file, documentType);
+
+  return {
+    text: parsedText,
+    uploadedDocument,
+  };
+};
 
 async function analyzeResumeAndJD(resumeText, jobDescription) {
   const prompt = `You are a senior technical interviewer and career coach.
@@ -304,19 +342,36 @@ export const analyzeResumeJDFromUpload = async (req, res) => {
 
     let resumeText = req.body.resumeText || "";
     let jobDescription = req.body.jobDescription || "";
+    const uploadedDocuments = [];
 
     if (resumeFile) {
-      const parser = new PDFParse({ data: resumeFile.buffer });
-      const parsed = await parser.getText();
-      await parser.destroy();
-      resumeText = `${resumeText}\n\n${parsed.text}`.trim();
+      const { text: parsedText, uploadedDocument } = await parseAndUploadPdf(
+        resumeFile,
+        "resume",
+      );
+
+      uploadedDocuments.push({
+        type: "resume",
+        url: uploadedDocument.secure_url,
+        publicId: uploadedDocument.public_id,
+      });
+
+      resumeText = `${resumeText}\n\n${parsedText}`.trim();
     }
 
     if (jdFile) {
-      const parser = new PDFParse({ data: jdFile.buffer });
-      const parsed = await parser.getText();
-      await parser.destroy();
-      jobDescription = `${jobDescription}\n\n${parsed.text}`.trim();
+      const { text: parsedText, uploadedDocument } = await parseAndUploadPdf(
+        jdFile,
+        "job-description",
+      );
+
+      uploadedDocuments.push({
+        type: "job-description",
+        url: uploadedDocument.secure_url,
+        publicId: uploadedDocument.public_id,
+      });
+
+      jobDescription = `${jobDescription}\n\n${parsedText}`.trim();
     }
 
     if (!resumeText || !jobDescription) {
@@ -327,7 +382,7 @@ export const analyzeResumeJDFromUpload = async (req, res) => {
     }
 
     const parsedResult = await analyzeResumeAndJD(resumeText, jobDescription);
-    res.json(parsedResult);
+    res.json({ ...parsedResult, uploadedDocuments });
   } catch (error) {
     console.error(error);
     res.status(500).json({

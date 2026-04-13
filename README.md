@@ -65,6 +65,7 @@ Backend:
 - JWT + bcryptjs
 - Firebase Admin
 - Multer + pdf-parse
+- Cloudinary for document storage
 - node-fetch
 
 AI Integrations:
@@ -101,17 +102,43 @@ ai-interview-platform/
 - OpenRouter API key
 - Firebase project (for Google login)
 
+## MongoDB With Docker
+
+The repo now includes a minimal MongoDB container configuration at [docker-compose.yml](docker-compose.yml).
+
+Start MongoDB:
+
+```bash
+docker compose up -d mongo
+```
+
+Stop MongoDB:
+
+```bash
+docker compose down
+```
+
+For local Docker-based development, use this backend connection string in [backend/.env](backend/.env):
+
+```env
+MONGO_URI=mongodb://127.0.0.1:27017/ai-interview-platform
+```
+
 ## Environment Variables
 
 Create a `.env` file in `backend/`:
 
 ```env
 PORT=5000
-MONGO_URI=mongodb+srv://<user>:<pass>@<cluster>/<db>
+MONGO_URI=mongodb://127.0.0.1:27017/ai-interview-platform
 JWT_SECRET=your_jwt_secret
 
 OPENROUTER_API_KEY=your_openrouter_api_key
 OPENROUTER_MODEL=mistralai/mistral-7b-instruct
+
+CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_cloudinary_api_secret
 
 FIREBASE_PROJECT_ID=your_firebase_project_id
 FIREBASE_CLIENT_EMAIL=your_service_account_client_email
@@ -135,6 +162,7 @@ Notes:
 
 - `FIREBASE_PRIVATE_KEY` must preserve newline escapes (`\n`) exactly as shown.
 - If Firebase Admin variables are missing, Google login verification on backend will not work.
+- Resume and JD PDFs are uploaded to Cloudinary and their text is parsed from the incoming file buffer for analysis.
 
 ## Local Setup
 
