@@ -255,17 +255,6 @@ Analytics:
 - Problem: title, topic, difficulty, link, order
 - UserProgress: userId + problemId + status (unique composite index)
 
-## Admin Access
-
-`/practice/problems` requires `role: admin`.
-
-The current register flow creates `role: user` by default. To create an admin, update a user role directly in MongoDB:
-
-```js
-// Example in MongoDB shell
-// db.users.updateOne({ email: "admin@example.com" }, { $set: { role: "admin" } })
-```
-
 ## Current Notes
 
 - Root `package.json` currently only includes shared dependencies and no run scripts.
